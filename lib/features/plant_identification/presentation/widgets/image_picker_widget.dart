@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/utils/app_theme.dart';
 import '../../../../core/utils/constants.dart';
+import '../../../../core/utils/platform_service.dart';
+import '../../../../core/utils/responsive_helper.dart';
 
 class ImagePickerWidget extends StatelessWidget {
   final File? selectedImage;
@@ -72,23 +74,29 @@ class ImagePickerWidget extends StatelessWidget {
         // Image picker buttons
         Row(
           children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => _pickImage(ImageSource.camera),
-                icon: const Icon(Icons.camera_alt),
-                label: const Text('Camera'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.primaryColor,
-                  side: const BorderSide(color: AppTheme.primaryColor),
+            if (PlatformService.supportsCameraAccess) ...[
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _pickImage(ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Camera'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primaryColor,
+                    side: const BorderSide(color: AppTheme.primaryColor),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: AppConstants.defaultPadding),
+              const SizedBox(width: AppConstants.defaultPadding),
+            ],
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _pickImage(ImageSource.gallery),
                 icon: const Icon(Icons.photo_library),
-                label: const Text('Gallery'),
+                label: Text(
+                  PlatformService.supportsCameraAccess
+                      ? 'Gallery'
+                      : 'Select Image',
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppTheme.primaryColor,
                   side: const BorderSide(color: AppTheme.primaryColor),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/app_theme.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/injection_container.dart';
+import '../../../../core/utils/responsive_helper.dart';
 import '../bloc/plant_identification_bloc.dart';
 import '../bloc/plant_identification_event.dart';
 import '../bloc/plant_identification_state.dart';
@@ -51,63 +52,70 @@ class _HomePageState extends State<HomePage> {
           },
           builder: (context, state) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(AppConstants.defaultPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Welcome section
-                  _buildWelcomeSection(),
-
-                  const SizedBox(height: AppConstants.largePadding),
-
-                  // Plant type dropdown
-                  PlantTypeDropdown(
-                    selectedType: _selectedPlantType,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedPlantType = value;
-                      });
-                    },
+              padding: ResponsiveHelper.getResponsivePadding(context),
+              child: Center(
+                child: Container(
+                  constraints: ResponsiveHelper.getResponsiveConstraints(
+                    context,
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Welcome section
+                      _buildWelcomeSection(),
 
-                  const SizedBox(height: AppConstants.defaultPadding),
+                      const SizedBox(height: AppConstants.largePadding),
 
-                  // Image picker
-                  ImagePickerWidget(
-                    selectedImage: _selectedImage,
-                    onImageSelected: (image) {
-                      setState(() {
-                        _selectedImage = image;
-                      });
-                    },
+                      // Plant type dropdown
+                      PlantTypeDropdown(
+                        selectedType: _selectedPlantType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedPlantType = value;
+                          });
+                        },
+                      ),
+
+                      const SizedBox(height: AppConstants.defaultPadding),
+
+                      // Image picker
+                      ImagePickerWidget(
+                        selectedImage: _selectedImage,
+                        onImageSelected: (image) {
+                          setState(() {
+                            _selectedImage = image;
+                          });
+                        },
+                      ),
+
+                      const SizedBox(height: AppConstants.largePadding),
+
+                      // Identify button
+                      _buildIdentifyButton(context, state),
+
+                      const SizedBox(height: AppConstants.largePadding),
+
+                      // Results section
+                      if (state is PlantIdentificationSuccess)
+                        PlantResultWidget(
+                          plant: state.plant,
+                          onSave: () {
+                            context.read<PlantIdentificationBloc>().add(
+                              SavePlantEvent(
+                                imagePath: state.plant.imagePath,
+                                type: state.plant.type,
+                                commonName: state.plant.commonName,
+                                scientificName: state.plant.scientificName,
+                                description: state.plant.description,
+                                careInstructions: state.plant.careInstructions,
+                                confidence: state.plant.confidence,
+                              ),
+                            );
+                          },
+                        ),
+                    ],
                   ),
-
-                  const SizedBox(height: AppConstants.largePadding),
-
-                  // Identify button
-                  _buildIdentifyButton(context, state),
-
-                  const SizedBox(height: AppConstants.largePadding),
-
-                  // Results section
-                  if (state is PlantIdentificationSuccess)
-                    PlantResultWidget(
-                      plant: state.plant,
-                      onSave: () {
-                        context.read<PlantIdentificationBloc>().add(
-                          SavePlantEvent(
-                            imagePath: state.plant.imagePath,
-                            type: state.plant.type,
-                            commonName: state.plant.commonName,
-                            scientificName: state.plant.scientificName,
-                            description: state.plant.description,
-                            careInstructions: state.plant.careInstructions,
-                            confidence: state.plant.confidence,
-                          ),
-                        );
-                      },
-                    ),
-                ],
+                ),
               ),
             );
           },

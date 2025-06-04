@@ -97,14 +97,46 @@ Each feature follows the Clean Architecture pattern:
    flutter run
    ```
 
-### Building APK
+### Building for Different Platforms
 
-To build a release APK:
+#### Android APK
 ```bash
 flutter build apk --release
+# Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
-The APK will be generated at: `build/app/outputs/flutter-apk/app-release.apk`
+#### Android App Bundle (for Play Store)
+```bash
+flutter build appbundle --release
+# Output: build/app/outputs/bundle/release/app-release.aab
+```
+
+#### iOS (requires macOS)
+```bash
+flutter build ios
+# Requires Xcode for final app creation
+```
+
+#### Web (Progressive Web App)
+```bash
+flutter build web --release
+# Output: build/web/
+```
+
+#### Development Testing
+```bash
+# Android
+flutter run -d android
+
+# iOS (macOS only)
+flutter run -d ios
+
+# Web
+flutter run -d chrome
+
+# Windows (if enabled)
+flutter run -d windows
+```
 
 ## 📋 Build Configuration
 
@@ -133,9 +165,28 @@ The APK will be generated at: `build/app/outputs/flutter-apk/app-release.apk`
 - **Body**: Regular text for content
 - **Captions**: Secondary information
 
+## 🌐 Platform Support
+
+This app is designed to work seamlessly across multiple platforms:
+
+- **📱 Android**: Full native support with camera access and local storage
+- **🍎 iOS**: Native iOS app with Cupertino design elements
+- **📱 iPad**: Optimized tablet experience with responsive layouts
+- **🌐 Web**: Progressive Web App (PWA) with offline capabilities
+- **🖥️ Desktop**: Windows, macOS, Linux support (planned)
+
+### Platform-Specific Features
+- **Responsive Design**: Adapts to any screen size automatically
+- **Platform UI**: Native look and feel on each platform
+- **Camera Integration**: Full camera access on mobile, file picker on web
+- **Offline Support**: Works without internet connection
+- **PWA Ready**: Installable web app with native-like experience
+
+For detailed platform information, see [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md)
+
 ## 📱 Screenshots
 
-*Screenshots will be added here showing the app's UI*
+*Screenshots will be added here showing the app's UI across different platforms*
 
 ## 🤝 Contributing
 

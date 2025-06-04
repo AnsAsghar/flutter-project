@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/app_theme.dart';
+import '../../../../core/utils/platform_service.dart';
+import '../../../../core/utils/responsive_helper.dart';
 import '../../../plant_identification/presentation/pages/home_page.dart';
 import '../../../history/presentation/pages/history_page.dart';
 import '../../../progress/presentation/pages/progress_page.dart';
@@ -56,63 +58,16 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   }
 
   Widget _buildBottomNavigationBar() {
-    // For 7 tabs, we need to use a custom implementation
-    // since BottomNavigationBar has a limit of 5 items for fixed type
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Container(
-          height: 70,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(_bottomNavItems.length, (index) {
-              final isSelected = _currentIndex == index;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      (_bottomNavItems[index].icon as Icon).icon,
-                      color: isSelected
-                          ? AppTheme.primaryColor
-                          : AppTheme.textSecondaryColor,
-                      size: 24,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _bottomNavItems[index].label ?? '',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : AppTheme.textSecondaryColor,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
+    // Use platform-specific navigation
+    return PlatformService.getPlatformNavigation(
+      children: _pages,
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      items: _bottomNavItems,
     );
   }
 }
