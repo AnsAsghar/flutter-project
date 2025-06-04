@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'core/utils/app_theme.dart';
 import 'core/utils/constants.dart';
 import 'core/utils/injection_container.dart' as di;
@@ -10,10 +11,19 @@ import 'features/navigation/presentation/pages/main_navigation_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize dependency injection
-  await di.init();
+  try {
+    // Initialize Hive for Flutter
+    await Hive.initFlutter();
 
-  runApp(const MyApp());
+    // Initialize dependency injection
+    await di.init();
+
+    runApp(const MyApp());
+  } catch (e) {
+    // If initialization fails, run a minimal app
+    debugPrint('Initialization error: $e');
+    runApp(ErrorApp(error: e.toString()));
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -116,5 +126,55 @@ class _AppInitializerState extends State<AppInitializer> {
     }
 
     return const MainNavigationPage();
+  }
+}
+
+class ErrorApp extends StatelessWidget {
+  final String error;
+
+  const ErrorApp({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'AI Plant Identifier - Error',
+      theme: AppTheme.lightTheme,
+      home: Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+                const SizedBox(height: 24),
+                Text(
+                  'Initialization Error',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.red[400],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'The app failed to initialize properly. Please restart the app.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Error: $error',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

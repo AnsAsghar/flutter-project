@@ -25,59 +25,66 @@ import 'constants.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  //! Features - Plant Identification
-  // Bloc
-  sl.registerFactory(
-    () => PlantIdentificationBloc(
-      identifyPlant: sl(),
-      savePlant: sl(),
-      getSavedPlants: sl(),
-    ),
-  );
+  try {
+    //! Features - Plant Identification
+    // Bloc
+    sl.registerFactory(
+      () => PlantIdentificationBloc(
+        identifyPlant: sl(),
+        savePlant: sl(),
+        getSavedPlants: sl(),
+      ),
+    );
 
-  // Use cases
-  sl.registerLazySingleton(() => IdentifyPlant(sl()));
-  sl.registerLazySingleton(() => SavePlant(sl()));
-  sl.registerLazySingleton(() => GetSavedPlants(sl()));
+    // Use cases
+    sl.registerLazySingleton(() => IdentifyPlant(sl()));
+    sl.registerLazySingleton(() => SavePlant(sl()));
+    sl.registerLazySingleton(() => GetSavedPlants(sl()));
 
-  // Repository
-  sl.registerLazySingleton<PlantRepository>(
-    () => PlantRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
-  );
+    // Repository
+    sl.registerLazySingleton<PlantRepository>(
+      () => PlantRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
+    );
 
-  // Data sources
-  sl.registerLazySingleton<PlantRemoteDataSource>(
-    () => PlantRemoteDataSourceImpl(client: sl()),
-  );
-  sl.registerLazySingleton<PlantLocalDataSource>(
-    () => PlantLocalDataSourceImpl(plantsBox: sl()),
-  );
+    // Data sources
+    sl.registerLazySingleton<PlantRemoteDataSource>(
+      () => PlantRemoteDataSourceImpl(client: sl()),
+    );
+    sl.registerLazySingleton<PlantLocalDataSource>(
+      () => PlantLocalDataSourceImpl(plantsBox: sl()),
+    );
 
-  //! Features - Onboarding
-  // Use cases
-  sl.registerLazySingleton(() => CheckOnboardingStatus(sl()));
-  sl.registerLazySingleton(() => CompleteOnboarding(sl()));
+    //! Features - Onboarding
+    // Use cases
+    sl.registerLazySingleton(() => CheckOnboardingStatus(sl()));
+    sl.registerLazySingleton(() => CompleteOnboarding(sl()));
 
-  // Repository
-  sl.registerLazySingleton<OnboardingRepository>(
-    () => OnboardingRepositoryImpl(localDataSource: sl()),
-  );
+    // Repository
+    sl.registerLazySingleton<OnboardingRepository>(
+      () => OnboardingRepositoryImpl(localDataSource: sl()),
+    );
 
-  // Data sources
-  sl.registerLazySingleton<OnboardingLocalDataSource>(
-    () => OnboardingLocalDataSourceImpl(sharedPreferences: sl()),
-  );
+    // Data sources
+    sl.registerLazySingleton<OnboardingLocalDataSource>(
+      () => OnboardingLocalDataSourceImpl(sharedPreferences: sl()),
+    );
 
-  //! Core
-  sl.registerLazySingleton(() => http.Client());
+    //! Core
+    sl.registerLazySingleton(() => http.Client());
 
-  //! External
-  final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => sharedPreferences);
+    //! External
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sl.registerLazySingleton(() => sharedPreferences);
 
-  // Initialize Hive and register adapters
-  Hive.registerAdapter(PlantModelAdapter());
+    // Initialize Hive and register adapters
+    Hive.registerAdapter(PlantModelAdapter());
 
-  final plantsBox = await Hive.openBox<PlantModel>(AppConstants.plantsBoxName);
-  sl.registerLazySingleton(() => plantsBox);
+    final plantsBox = await Hive.openBox<PlantModel>(
+      AppConstants.plantsBoxName,
+    );
+    sl.registerLazySingleton(() => plantsBox);
+  } catch (e) {
+    // Re-throw the error to be handled by main.dart
+    throw Exception('Failed to initialize dependencies: $e');
+  }
 }

@@ -48,7 +48,7 @@ dependencies:
   # Local Storage
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  shared_preferences: ^2.3.2
+  shared_preferences: ^2.2.2
 
   # Image Handling
   image_picker: ^1.1.2
@@ -60,10 +60,10 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.10+1
 
-  # Platform-specific packages
-  url_launcher: ^6.3.1  # For web links and platform integration
-  device_info_plus: ^10.1.2  # Device information across platforms
-  package_info_plus: ^8.0.2  # App package information
+  # Platform-specific packages (removed problematic ones for now)
+  # url_launcher: ^6.3.1  # For web links and platform integration
+  # device_info_plus: ^9.1.2  # Device information across platforms (compatible version)
+  # package_info_plus: ^8.0.2  # App package information
 
   # Web-specific optimizations
   flutter_web_plugins:
